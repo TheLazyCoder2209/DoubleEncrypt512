@@ -23,15 +23,8 @@ It’s a file vault for Android that uses **Two-Factor Physical Encryption**:
 
 ## 💰 The "Play Store" Goal & Source Code
 I am a solo developer and I want to get this app onto the Google Play Store! However, Google charges a one-time developer fee of **$25 (~€25)**.
+Because of this, once i get the 25 euros, i will create the account and release the app on Google Play.
 
-**Current Progress:**
-`[░░░░░░░░░░░░░░░░░░░░] 0/25€` *(I will update this bar as we go!)*
-
-**The Deal:**
-* **Source Code Release:** I will release the full source code under the **GPL License** as soon as we hit the **€25 goal**.
-* **Hall of Fame:** Every single donor will have their name (or nickname) permanently immortalized on this GitHub page in the "Donors" section below.
-
-[![support](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/theonlylazydev)
 
 ---
 
@@ -56,5 +49,3 @@ This project is **GPL Licensed**. You are free to use, modify, and share the cod
 
 ---
 
-### 🏆 Donors (Hall of Fame)
-*Waiting for the first legend to help me beat the Google fee...*

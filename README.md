@@ -33,7 +33,7 @@ Found a bug? Want to suggest a feature?
 * **Testers:** If you have weird NFC tags (hotel keys, old bus cards, etc.) and want to test compatibility, testers are **very welcome!**
 
 ## ⚖️ Licensing
-This project is **GPL Licensed**. You are free to use, modify, and share the code (once released), provided you give credit to the original author.
+This project is **GPL Licensed**. You are free to use, modify, and share the code, provided you give credit to the original author (TheLazyCoder)
 
 ---
 

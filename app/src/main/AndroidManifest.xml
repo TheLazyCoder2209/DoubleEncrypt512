@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.lazycoder.doubleencrypt512">
+
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-feature android:name="android.hardware.nfc" android:required="true" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
+
+    <application
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="DoubleEncrypt512"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar"> <activity
+        android:name=".MainActivity"
+        android:exported="true"
+        android:launchMode="singleTop">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+
+        <intent-filter>
+            <action android:name="android.nfc.action.TECH_DISCOVERED" />
+        </intent-filter>
+
+        <meta-data
+            android:name="android.nfc.action.TECH_DISCOVERED"
+            android:resource="@xml/nfc_tech_filter" />
+    </activity>
+
+        <activity
+            android:name=".SetupWizardActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:label="Initial Configuration"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+    </application>
+
+</manifest>

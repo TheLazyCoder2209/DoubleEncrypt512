@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="STEP 01/02"
+        android:textColor="#33B5E5"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Initialize Vault"
+        android:textColor="#FFFFFF"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/dialog_holo_dark_frame"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PHYSICAL KEY REQUIRED"
+            android:textColor="#33B5E5"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/wizardDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="To begin, please tap the NFC tag you wish to use as your Master Key. This tag will be combined with Android Keystore to generate your 512-bit entropy."
+            android:textColor="#CCCCCC"
+            android:lineSpacingExtra="4dp"
+            android:textSize="16sp" />
+
+        <ProgressBar
+            android:id="@+id/wizardProgress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:indeterminate="true"
+            android:indeterminateTint="#33B5E5" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="🛡️ SECURITY TIP: Use a high-quality NFC tag (like a work badge or a dedicated sticker). If you lose this tag, your data is unrecoverable."
+        android:textColor="#888888"
+        android:textSize="12sp"
+        android:fontFamily="sans-serif-condensed" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/btnCancelWizard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="EXIT SETUP"
+        android:background="?android:attr/selectableItemBackground"
+        android:textColor="#FF4444"
+        android:textSize="12sp" />
+
+</LinearLayout>

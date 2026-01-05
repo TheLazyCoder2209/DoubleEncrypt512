@@ -22,12 +22,9 @@ It’s a file vault for Android that uses **Two-Factor Physical Encryption**:
 ---
 
 ## 🔓 Is this Open Source?
-**Not yet.** I am currently polishing the code for the **Initial Release (V1.0)**, which is coming in the next few days. 
+~~**Not yet.** I am currently polishing the code for the **Initial Release (V1.0)**, which is coming in the next few days.~~
+**YES**! I managed to polish the app, make it better and now, the Source Code is out! Use it **Wisely**!
 
-However, if you can't wait:
-* 📧 **Early Access:** I can send the source code to you for review! Just ask via email at: `andreatamburini2209@gmail.com`.
-* ⚖️ **The Rules:** You **CANNOT** publish, redistribute, or use this code in other projects until the official release on this repository. 
-* 🛡️ **Legal Note:** Any unauthorized use or "leaking" of the code before the official release will result in a DMCA takedown and, if necessary, further legal action. Let's keep it friendly — just wait for the release!
 ---
 
 ## 🤝 Community & Support

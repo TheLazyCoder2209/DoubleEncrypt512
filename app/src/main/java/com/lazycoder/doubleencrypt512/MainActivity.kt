@@ -7,46 +7,74 @@ import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Build
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
+import android.graphics.Typeface
+import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.ScrollView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var nfcStatusText: TextView
-    private lateinit var dirPathText: TextView
+    private lateinit var terminalLog: TextView
+    private lateinit var logScrollView: ScrollView
     private lateinit var secureDeleteCheck: CheckBox
+    private lateinit var dirPathText: TextView
+
     private lateinit var vaultStorage: VaultStorage
     private lateinit var cryptoEngine: CryptoEngine
     private var nfcAdapter: NfcAdapter? = null
+
     private var pendingUri: Uri? = null
     private var isEncryptMode = true
 
-    // OpenDocument grants WRITE/DELETE permissions which GetContent does not
+    // --- HELPER FOR GLOBAL BOLDING ---
+    private fun applyOverkillBold(rawText: String): CharSequence {
+        val cleanText = rawText.replace("****", "")
+        val builder = SpannableStringBuilder(cleanText)
+        val firstMarker = rawText.indexOf("****")
+        val lastMarker = rawText.lastIndexOf("****")
+
+        if (firstMarker != -1 && lastMarker != -1 && firstMarker != lastMarker) {
+            val start = firstMarker
+            val end = lastMarker - 4
+            builder.setSpan(StyleSpan(Typeface.BOLD),
+                start.coerceAtLeast(0),
+                end.coerceAtMost(cleanText.length), 0)
+        }
+        return builder
+    }
+
     private val getFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
         uri?.let {
             pendingUri = it
-            nfcStatusText.text = "FILE READY: TAP NFC TAG"
-            nfcStatusText.setTextColor(getColor(android.R.color.holo_orange_light))
+            appendLog("****[USER]**** File staged: ${it.path?.split("/")?.lastOrNull()}")
+            // Apply bold fix to the status bar
+            nfcStatusText.text = applyOverkillBold("****READY: TAP TAG****")
         }
     }
 
-    private val selectDir = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+    private val selectDir = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri: Uri? ->
         uri?.let {
             vaultStorage.setDefaultDirectory(it)
-            updateDirUI(it)
+            dirPathText.text = "Output: ${it.path?.split(":")?.lastOrNull()}"
+            appendLog("****[SYSTEM]**** Output directory updated.")
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        vaultStorage = VaultStorage(this)
-        cryptoEngine = CryptoEngine(this)
-        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
+        vaultStorage = VaultStorage(this)
         if (!vaultStorage.isInitialized()) {
             startActivity(Intent(this, SetupWizardActivity::class.java))
             finish()
@@ -54,11 +82,20 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContentView(R.layout.activity_main)
-        nfcStatusText = findViewById(R.id.nfc_status_text)
-        dirPathText = findViewById(R.id.dir_path_text)
-        secureDeleteCheck = findViewById(R.id.check_secure_delete)
+        cryptoEngine = CryptoEngine(this)
+        nfcAdapter = NfcAdapter.getDefaultAdapter(this)
 
-        vaultStorage.getDefaultDirectory()?.let { updateDirUI(it) }
+        nfcStatusText = findViewById(R.id.nfc_status_text)
+        terminalLog = findViewById(R.id.terminal_log)
+        logScrollView = findViewById(R.id.log_scroll_view)
+        secureDeleteCheck = findViewById(R.id.check_secure_delete)
+        dirPathText = findViewById(R.id.dir_path_text)
+
+        appendLog("****[SYSTEM]**** DoubleEncrypt512 Engine Init...")
+
+        vaultStorage.getDefaultDirectory()?.let {
+            dirPathText.text = "Output: ${it.path?.split(":")?.lastOrNull()}"
+        }
 
         findViewById<Button>(R.id.btn_encrypt).setOnClickListener {
             isEncryptMode = true
@@ -70,18 +107,90 @@ class MainActivity : AppCompatActivity() {
             getFile.launch(arrayOf("*/*"))
         }
 
-        findViewById<Button>(R.id.btn_select_dir).setOnClickListener { selectDir.launch(null) }
+        findViewById<Button>(R.id.btn_select_dir).setOnClickListener {
+            selectDir.launch(null)
+        }
     }
 
-    private fun updateDirUI(uri: Uri) {
-        dirPathText.text = "Output: ${uri.path?.split(":")?.lastOrNull()}"
+    private fun appendLog(message: String) {
+        val time = SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date())
+        runOnUiThread {
+            if (::terminalLog.isInitialized) {
+                terminalLog.append("\n")
+                terminalLog.append(applyOverkillBold("[$time] $message"))
+                logScrollView.post { logScrollView.fullScroll(View.FOCUS_DOWN) }
+            }
+        }
+    }
+
+    private fun showBiometricGate(tagId: String) {
+        val executor = ContextCompat.getMainExecutor(this)
+        val biometricPrompt = BiometricPrompt(this, executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    appendLog("****[AUTH]**** Match. Releasing Keys...")
+                    executeCryptoProcess(tagId)
+                }
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    appendLog("****[ERROR]**** Denied: $errString")
+                }
+            })
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Authorize Transaction")
+            .setSubtitle("512-bit key release requested.")
+            .setNegativeButtonText("Cancel")
+            .setAllowedAuthenticators(androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG)
+            .build()
+
+        biometricPrompt.authenticate(promptInfo)
+    }
+
+    private fun executeCryptoProcess(tagId: String) {
+        val key = vaultStorage.getTagKeys(tagId)?.get(1)
+        val targetDir = vaultStorage.getDefaultDirectory()
+
+        if (key == null || targetDir == null) {
+            appendLog("****[ERROR]**** Key or Directory missing.")
+            return
+        }
+
+        val sourceUri = pendingUri ?: return
+        appendLog("****[EE]**** Cascading ${if (isEncryptMode) "Encryption" else "Decryption"}...")
+
+        val resultUri = if (isEncryptMode) {
+            cryptoEngine.encryptFile(sourceUri, key, targetDir)
+        } else {
+            cryptoEngine.decryptFile(sourceUri, key, targetDir)
+        }
+
+        if (resultUri != null) {
+            appendLog("****[SUCCESS]**** Operation Complete.")
+            if (isEncryptMode && secureDeleteCheck.isChecked) {
+                cryptoEngine.secureErase(sourceUri)
+                appendLog("****[SECURE]**** Shredded source.")
+            }
+            pendingUri = null
+            nfcStatusText.text = applyOverkillBold("****TRANSACTION COMPLETE****")
+        } else {
+            appendLog("****[FATAL]**** Engine failure.")
+        }
     }
 
     override fun onResume() {
         super.onResume()
         val intent = Intent(this, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE)
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_UPDATE_CURRENT
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, flags)
         nfcAdapter?.enableForegroundDispatch(this, pendingIntent, null, null)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        nfcAdapter?.disableForegroundDispatch(this)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -93,35 +202,14 @@ class MainActivity : AppCompatActivity() {
             intent.getParcelableExtra(NfcAdapter.EXTRA_TAG)
         }
 
-        if (tag != null && pendingUri != null) {
-            val tagId = tag.id.joinToString("") { "%02x".format(it) }
-            val key = vaultStorage.getTagKeys(tagId)?.get(1)
-            val targetDir = vaultStorage.getDefaultDirectory()
-
-            if (targetDir == null) {
-                Toast.makeText(this, "Select output folder first!", Toast.LENGTH_SHORT).show()
+        if (tag != null) {
+            if (pendingUri == null) {
+                appendLog("****[SYSTEM]**** No file selected.")
                 return
             }
-
-            if (key != null) {
-                val resultUri = if (isEncryptMode) {
-                    cryptoEngine.encryptFile(pendingUri!!, key, targetDir)
-                } else {
-                    cryptoEngine.decryptFile(pendingUri!!, key, targetDir)
-                }
-
-                if (resultUri != null) {
-                    if (isEncryptMode && secureDeleteCheck.isChecked) {
-                        cryptoEngine.secureErase(pendingUri!!)
-                    }
-                    nfcStatusText.text = "SUCCESS"
-                    nfcStatusText.setTextColor(getColor(android.R.color.holo_green_light))
-                    pendingUri = null
-                } else {
-                    nfcStatusText.text = "ERROR: ACTION FAILED"
-                    nfcStatusText.setTextColor(getColor(android.R.color.holo_red_light))
-                }
-            }
+            val tagId = tag.id.joinToString("") { "%02x".format(it) }
+            appendLog("****[NFC]**** Tag Found: $tagId")
+            showBiometricGate(tagId)
         }
     }
 }

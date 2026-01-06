@@ -5,38 +5,33 @@ plugins {
 
 android {
     namespace = "com.lazycoder.doubleencrypt512"
-    // Use a standard integer for compileSdk (34 or 35 are stable for 2026)
     compileSdk = 35
 
     defaultConfig {
         applicationId = "com.lazycoder.doubleencrypt512"
-        minSdk = 31    // Android 12
-        targetSdk = 35 // Android 14/15
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = 31
+        targetSdk = 35
+        versionCode = 3
+        versionName = "1.1.0-beta"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         release {
-            // Set this to true to protect your encryption logic from being easily read
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "17"
     }
 }
 
@@ -46,13 +41,11 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
-    // Required for the DocumentFile and Scoped Storage logic we wrote
-    implementation("androidx.documentfile:documentfile:1.0.1")
-
-    // The security library for EncryptedSharedPreferences
+    // 🧬 These fix the "Unresolved Reference" for Biometrics and Crypto
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("androidx.documentfile:documentfile:1.0.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

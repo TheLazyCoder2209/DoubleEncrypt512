@@ -1,51 +1,78 @@
-🔐 DoubleEncrypt512
-Because if your encryption isn't overkill, is it even encryption?
+# 🔐 DoubleEncrypt512  
+*Because if your encryption isn't overkill, is it even encryption?*
 
-Welcome to DoubleEncrypt512, the only app that treats your grocery lists like top-secret nuclear codes. We’ve combined the nostalgia of Android Holo Blue with the "don't-mess-with-me" power of 512-bit cascading entropy.
+Welcome to **DoubleEncrypt512**, the only app that treats your grocery lists like top-secret nuclear codes.  
+We’ve combined the nostalgia of Android Holo Blue with the "don't-mess-with-me" power of **512-bit cascading entropy**.
 
-🧐 What is this?
-It’s a high-security file vault for Android that utilizes Three-Factor Physical Binding:
+---
 
-Factor 1: Your phone’s internal Hardware-backed Keystore (TEE-isolated).
+## 🧐 What is this?
 
-Factor 2: Your Biometric Signature (Fingerprint required to "unlock" the vault in RAM).
+A high-security file vault for Android that utilizes **Three-Factor Physical Binding**:
 
-Factor 3: A physical NFC Tag (The physical "pointer" to your 512-bit master key).
+### 🔑 Three-Factor Physical Binding
 
-The Result: Your files are saved as .vlt blobs. If a hacker steals your phone, they have nothing. If they steal your NFC tag, they have a piece of plastic. They need THE PHONE + THE TAG + YOUR FINGER to see your secret memes.
+- **Factor 1 — Hardware-backed Keystore**  
+  Uses your phone’s internal TEE (Trusted Execution Environment) for key isolation.
 
-🚀 Features
-🚫 100% Ad-Free: No banners, no pop-ups, no trackers. Just raw, industrial-grade code.
+- **Factor 2 — Biometric Signature**  
+  Requires a mandatory fingerprint scan to unlock the vault in RAM.
 
-🔵 Holo UI: Clean, dark, and blue—back to when Android felt like a tool for power users, not a bubbly toy.
+- **Factor 3 — Physical NFC Tag**  
+  A Mifare / ISO NFC tag acting as the physical "pointer" to your 512-bit master key.
 
-🔋 True 512-bit Cascade: We don't just use one key. We split 512 bits of entropy into two 256-bit AES-GCM layers. If one layer is ever broken, the second layer is there to laugh at the attacker.
+### 🧠 The Result
 
-🧬 Biometric Binding: The master key is physically locked inside your phone's secure hardware. It only releases its grip when your fingerprint is verified.
+Your files are saved as `.vlt` blobs.
 
-📄 The .vlt Standard: Securely encrypted raw data output. No headers, no metadata leaks—just an opaque wall of math.
+- If a hacker steals your phone → they have nothing.  
+- If they steal your NFC tag → they have a piece of plastic.  
+- They need **THE PHONE + THE TAG + YOUR FINGER** to see your secret memes.
 
-🏷️ Physical Keycard: Use your office badge, bus pass, or any NFC sticker as your master key pointer.
+---
 
-🔓 Is this Open Source?
-YES! After intensive polishing and security hardening, the Source Code is out! Use it Wisely.
+## 🚀 Features
 
-🤝 Community & Support
-Issues: Found a bug? Open an issue on GitHub.
+- 🚫 **100% Ad-Free** — No banners, no pop-ups, no trackers. Just raw code.  
+- 🔵 **Holo UI** — Clean, dark, blue. When Android still felt like a power tool.  
+- 🔋 **True 512-bit Cascade** — Two independent 256-bit AES-GCM layers. If one fails, the other stands firm.  
+- 🧬 **Biometric Locking** — The master key lives inside the Secure Element and only unlocks after biometric verification.  
+- 🏷️ **Physical Keycard** — Use your office badge, bus card, or any NFC sticker as your master key.
 
-Testers: If you have exotic NFC tags (hotel keys, old bus cards, etc.), help us test compatibility!
+---
 
-⚖️ Licensing
-This project is GPL Licensed. You are free to use, modify, and share the code, provided you give credit to the original author (TheLazyCoder).
+## 🔓 Is this Open Source?
 
-🛠 How to Use
-The Initiation: Open the app and tap your NFC tag. You'll be asked to scan your finger to bind the 512-bit key to your hardware.
+**YES.**  
+After intensive polishing and security hardening, the source code is public. Use it wisely.
 
-The Lockdown: Select a file, tap your tag, scan your finger, and generate your .vlt file.
+---
 
-The Rescue: Select the .vlt file, tap the exact same tag, verify your identity, and restore your data.
+## 🛠 How to Use
 
-⚠️ Warning
-Don't Lose Your Tag: If you lose your NFC tag, your files are gone. Permanently. Not even a supercomputer can help you.
+| Phase         | Action                                                     | Outcome                                       |
+|---------------|-------------------------------------------------------------|-----------------------------------------------|
+| Initiation    | Open the app, tap your NFC tag, scan your finger           | Binds the 512-bit key to your hardware        |
+| Lockdown      | Select a file, tap your tag, scan your finger              | Generates encrypted `.vlt` file               |
+| Rescue        | Select `.vlt`, tap same tag, verify identity               | Restores original file                        |
 
-Dog Danger: If your dog eats your NFC keycard, you lose your data. Please keep your physical keys away from hungry pets.
+---
+
+## 🤝 Community & Support
+
+- **Issues** — Found a bug? Open a GitHub issue. Big-brain ideas welcome.  
+- **Testers** — If you own weird NFC tags (hotel keys, bus cards, fossils), please test and report compatibility.
+
+---
+
+## ⚖️ Licensing
+
+GPL Licensed.  
+You are free to use, modify, and share the code, provided you credit the original author (**TheLazyCoder**).
+
+---
+
+## ⚠️ Warning
+
+- **Don't Lose Your Tag** — Lose it = lose your data. Forever.  
+- **Dog Danger** — If your dog eats your NFC keycard, your files are gone. Please protect your cryptographic snacks.
